@@ -1,0 +1,108 @@
+.nav {
+	background-color: var(--dark-blue);
+	color: white;
+	height: 4em;
+	display: flex;
+	justify-content: left;
+	align-items: center;
+	gap: 10em;
+	padding: 0 2em;
+}
+
+.algorithms {
+	color: white;
+	padding: 0.5em;
+	background-color: var(--dark-blue);
+	border-radius: 4px;
+}
+
+h1 {
+	margin: 0.5em 0;
+}
+
+.main {
+	margin: 1em auto;
+	padding: 0 2em;
+}
+
+.grid {
+	border: 1px solid var(--light-blue);
+	width: 100%;
+}
+
+.grid-row {
+	display: flex;
+}
+
+.btn {
+	padding: 0.5em;
+	min-width: 10em;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	color: white;
+	font-family: "Roboto", sans-serif;
+	font-weight: 500;
+	font-size: 1rem;
+}
+
+.btn-green {
+	background-color: var(--green);
+}
+
+.btn-dark-bg {
+	background-color: var(--dark-blue);
+}
+
+.btn-dark-bg:hover {
+	color: var(--green);
+}
+
+.main-text {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+}
+
+.annotations-div {
+	display: flex;
+}
+
+.annotation {
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+	flex-grow: 1;
+	gap: 0.75em;
+	margin: 1.5em 0 1em 0;
+	text-align: center;
+	font-size: 1.15rem;
+	font-weight: 500;
+	color: var(--svg-text-color);
+}
+
+.node-example {
+	width: 23px;
+	height: 23px;
+	border: 1px solid var(--light-blue);
+}
+
+.visited-node {
+	border: none;
+	background-color: var(--visited);
+}
+
+.shortest-path-node {
+	border: none;
+	background-color: var(--shortest-path);
+}
+
+.wall-node {
+	border: none;
+	background-color: var(--wall);
+}
+
+.algorithm-description {
+	font-size: 1.15rem;
+}

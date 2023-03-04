@@ -1,0 +1,7 @@
+.node {
+	outline: 1px solid var(--light-blue);
+	width: 23px;
+	height: 23px;
+	margin: 1px;
+	display: inline-block;
+}
