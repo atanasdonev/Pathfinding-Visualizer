@@ -2,46 +2,76 @@ import { useEffect, useRef, useState } from "react";
 import { Node } from "./Node/Node";
 import "./PathfindingVisualizer.css";
 
-// const START_NODE_ROW = 16;
-// const START_NODE_COL = 16;
-// const FINISH_NODE_ROW = 16;
-// const FINISH_NODE_COL = 46;
+const START_NODE_ROW = 15;
+const START_NODE_COL = 16;
+const TARGET_NODE_ROW = 15;
+const TARGET_NODE_COL = 48;
 
-const getInitialGrid = gridDiv => {
+const NODE_SIZE = 23;
+const TOTAL_ROWS = 31;
+
+function getInitialGrid(gridDiv) {
 	const grid = [];
-	for (let row = 0; row < 31; row++) {
+	for (let row = 0; row < TOTAL_ROWS; row++) {
 		const currentRow = [];
-		for (let col = 0; col < gridDiv.current.offsetWidth / 25; col++) {
-			currentRow.push(<Node />);
+		for (let col = 0; col < gridDiv.current.offsetWidth / NODE_SIZE; col++) {
+			currentRow.push(createNode(row, col));
 		}
 		grid.push(currentRow);
 	}
 	return grid;
-};
+}
 
-// const createNode = (col, row) => {
-// 	return {
-// 		col,
-// 		row,
-// 		isStart: row === START_NODE_ROW && col === START_NODE_COL,
-// 		isFinish: row === FINISH_NODE_ROW && col === FINISH_NODE_COL,
-// 		distance: Infinity,
-// 		isVisited: false,
-// 		isWall: false,
-// 		previousNode: null
-// 	};
-// };
+function createNode(row, col) {
+	return {
+		col,
+		row,
+		isStart: row === START_NODE_ROW && col === START_NODE_COL,
+		isTarget: row === TARGET_NODE_ROW && col === TARGET_NODE_COL,
+		distance: Infinity,
+		isVisited: false,
+		isWall: false,
+		previousNode: null
+	};
+}
+
+function getGridWithWallToggled(grid, row, col) {
+	const gridWithWalls = grid.slice();
+	const node = gridWithWalls[row][col];
+	const nodeWall = {
+		...node,
+		isWall: !node.isWall
+	};
+	gridWithWalls[row][col] = nodeWall;
+	return gridWithWalls;
+}
 
 const PathfindingVisualizer = () => {
 	const gridDiv = useRef(null);
 
-	const [isMenuOpen, setIsMenuOpen] = useState(false);
 	const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
 	const [grid, setGrid] = useState([]);
+	const [mouseIsPressed, setMouseIsPressed] = useState(false);
 
 	useEffect(() => {
 		setGrid(getInitialGrid(gridDiv));
 	}, []);
+
+	function handleMouseDown(row, col) {
+		const gridWithWalls = getGridWithWallToggled(grid, row, col);
+		setGrid(gridWithWalls);
+		setMouseIsPressed(true);
+	}
+
+	function handleMouseUp() {
+		setMouseIsPressed(false);
+	}
+
+	function handeMouseEnter(row, col) {
+		if (mouseIsPressed === false) return;
+		const gridWithWalls = getGridWithWallToggled(grid, row, col);
+		setGrid(gridWithWalls);
+	}
 
 	return (
 		<>
@@ -103,7 +133,27 @@ const PathfindingVisualizer = () => {
 						return (
 							<div className="grid-row" key={rowIdx}>
 								{row.map((node, nodeIdx) => {
-									return <Node key={nodeIdx} />;
+									const { row, col, isTarget, isStart, isWall } = node;
+									return (
+										<Node
+											key={nodeIdx}
+											row={row}
+											col={col}
+											isStart={isStart}
+											isTarget={isTarget}
+											isWall={isWall}
+											mouseIsPressed={mouseIsPressed}
+											onMouseDown={(row, col) => {
+												handleMouseDown(row, col);
+											}}
+											onMouseUp={() => {
+												handleMouseUp();
+											}}
+											onMouseEnter={(row, col) => {
+												handeMouseEnter(row, col);
+											}}
+										/>
+									);
 								})}
 							</div>
 						);

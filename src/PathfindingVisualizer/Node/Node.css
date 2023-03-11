@@ -2,6 +2,21 @@
 	outline: 1px solid var(--light-blue);
 	width: 23px;
 	height: 23px;
-	margin: 1px;
+	/* margin: 1px; */
 	display: inline-block;
+}
+
+.node-wall {
+	background-color: var(--wall);
+	outline: none;
+}
+
+.node-target {
+	background-image: url(../../src/assets/target.svg);
+	background-size: 23px;
+}
+
+.node-start {
+	background-image: url(../../src/assets/start.svg);
+	background-size: 23px;
 }
