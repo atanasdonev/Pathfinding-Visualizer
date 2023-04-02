@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Node } from "./Node/Node";
+import { dijkstra, getNodesInShortestPathOrder } from "../algorithms/dijkstra";
 import "./PathfindingVisualizer.css";
 
 const START_NODE_ROW = 15;
@@ -36,18 +37,23 @@ function createNode(row, col) {
 }
 
 function getGridWithWallToggled(grid, row, col) {
+	const node = grid[row][col];
 	const gridWithWalls = grid.slice();
-	const node = gridWithWalls[row][col];
-	const nodeWall = {
-		...node,
-		isWall: !node.isWall
-	};
-	gridWithWalls[row][col] = nodeWall;
+
+	if (!node.isStart && !node.isTarget) {
+		const nodeWall = {
+			...node,
+			isWall: !node.isWall
+		};
+		gridWithWalls[row][col] = nodeWall;
+	}
+
 	return gridWithWalls;
 }
 
 const PathfindingVisualizer = () => {
 	const gridDiv = useRef(null);
+	const nodeRef = useRef(null);
 
 	const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
 	const [grid, setGrid] = useState([]);
@@ -58,12 +64,18 @@ const PathfindingVisualizer = () => {
 	}, []);
 
 	function handleMouseDown(row, col) {
-		const gridWithWalls = getGridWithWallToggled(grid, row, col);
-		setGrid(gridWithWalls);
-		setMouseIsPressed(true);
+		const currentNode = grid[row][col];
+		console.log(currentNode.key);
+		if (currentNode.isStart || currentNode.isTarget) {
+			return;
+		} else {
+			const gridWithWalls = getGridWithWallToggled(grid, row, col);
+			setGrid(gridWithWalls);
+			setMouseIsPressed(true);
+		}
 	}
 
-	function handleMouseUp() {
+	function handleMouseUp(row, col) {
 		setMouseIsPressed(false);
 	}
 
@@ -73,6 +85,41 @@ const PathfindingVisualizer = () => {
 		setGrid(gridWithWalls);
 	}
 
+	function visualizerDijkstra() {
+		const startNode = grid[START_NODE_ROW][START_NODE_COL];
+		const targetNode = grid[TARGET_NODE_ROW][TARGET_NODE_COL];
+
+		const visitedNodesInOrder = dijkstra(grid, startNode, targetNode);
+		const nodesInShortestPathOrder = getNodesInShortestPathOrder(targetNode);
+
+		animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder);
+	}
+
+	function animateDijkstra(visitedNodesInOrder, nodesInShortestPathOrder) {
+		for (let i = 0; i <= visitedNodesInOrder.length; i++) {
+			if (i === visitedNodesInOrder.length) {
+				setTimeout(() => {
+					animateShortestPath(nodesInShortestPathOrder);
+				}, 5 * i);
+				return;
+			}
+			setTimeout(() => {
+				const node = visitedNodesInOrder[i];
+				document.getElementById(`node-${node.row}-${node.col}`).className =
+					"node node-visited";
+			}, 5 * i);
+		}
+	}
+
+	function animateShortestPath(nodesInShortestPathOrder) {
+		for (let i = 0; i < nodesInShortestPathOrder.length; i++) {
+			setTimeout(() => {
+				const node = nodesInShortestPathOrder[i];
+				document.getElementById(`node-${node.row}-${node.col}`).className =
+					"node node-shortest-path";
+			}, 30 * i);
+		}
+	}
 	return (
 		<>
 			<nav className="nav">
@@ -88,7 +135,9 @@ const PathfindingVisualizer = () => {
 					<option value="bfs">Breadth-first Search</option>
 					<option value="dfs">Depth-first Search</option>
 				</select>
-				<button className="btn btn-green">Visualize!</button>
+				<button className="btn btn-green" onClick={visualizerDijkstra}>
+					Visualize!
+				</button>
 				<button className="btn btn-dark-bg btn-clear">Clear Board</button>
 			</nav>
 			<section className="main-text">
@@ -136,6 +185,7 @@ const PathfindingVisualizer = () => {
 									const { row, col, isTarget, isStart, isWall } = node;
 									return (
 										<Node
+											ref={nodeRef}
 											key={nodeIdx}
 											row={row}
 											col={col}
@@ -146,8 +196,8 @@ const PathfindingVisualizer = () => {
 											onMouseDown={(row, col) => {
 												handleMouseDown(row, col);
 											}}
-											onMouseUp={() => {
-												handleMouseUp();
+											onMouseUp={(row, col) => {
+												handleMouseUp(row, col);
 											}}
 											onMouseEnter={(row, col) => {
 												handeMouseEnter(row, col);

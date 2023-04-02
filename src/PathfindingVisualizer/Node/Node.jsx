@@ -15,7 +15,7 @@ export const Node = props => {
 			className={`node ${extraClassNames}`}
 			onMouseDown={() => onMouseDown(row, col)}
 			onMouseEnter={() => onMouseEnter(row, col)}
-			onMouseUp={() => onMouseUp()}
+			onMouseUp={() => onMouseUp(row, col)}
 		></div>
 	);
 };
